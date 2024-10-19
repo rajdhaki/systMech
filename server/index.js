@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 8000
 const app = express()
 dbConnect()
 app.use(cors({
-	origin: 'https://syst-mech.vercel.app/',
+	origin: process.env.FRONTEND_URL || '',
 	credentials: true
 }))
 app.use(express.json())
