@@ -14,7 +14,6 @@ import BlogPost from "./pages/BlogPost";
 import AdminNavbar from "./components/AdminNavbar";
 import EditBlog from "./pages/EditBlog"; // Import the new component
 import Testmonials from "./pages/Testmonials";
-// import dotenv from 'dotenv'
 
 const ScrollToHashElement = () => {
   const location = useLocation();
@@ -99,7 +98,7 @@ const router = createBrowserRouter([
 
 function App() {
   // dotenv.config()
-  console.log(import.meta.env.VITE_BACKEND_URL)
+  // console.log(import.meta.env.VITE_BACKEND_URL)
   return (
     <div className="overflow-x-hidden">
       <RouterProvider router={router} />
