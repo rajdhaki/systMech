@@ -5,7 +5,7 @@ import { dbConnect } from './dbConnect.js'
 import {systmetch} from './useSchema.js'
 import { Blog } from './blogCollection.js'
 import multer from 'multer'
-
+import path from 'path'
 
 // Update the Multer configuration
 const upload = multer({
@@ -30,20 +30,15 @@ const PORT = process.env.PORT || 8000
 const app = express()
 dbConnect()
 app.use(cors({
-	origin: process.env.FRONTEND_URL|| '',
-	credentials: true
+	"origin": "*",
+	
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use('/uploads', express.static('uploads'))
-app.use(function (req, res, next) {
-    //Enabling CORS
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, ")
-    Accept, x-client-key, x-client-token, x-client-secret, Authorization;
-    next();
-});
+const _dirname = path.dirname("")
+const buildpath = path.join(_dirname,'../client/dist')
+app.use(express.static(buildpath))
 
 app.get('/', (req, res) => {
     res.send("Hello there")
