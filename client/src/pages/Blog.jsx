@@ -47,7 +47,7 @@ const Blog = ({ id }) => {
             }
         ]
     };
-console.log("blog name",blogs);
+// console.log("blog name",blogs);
 
     return (
         
