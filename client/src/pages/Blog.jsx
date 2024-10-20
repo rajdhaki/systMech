@@ -47,7 +47,8 @@ const Blog = ({ id }) => {
             }
         ]
     };
-console.log("blog name",blogs);
+
+
 
     return (
         
@@ -62,8 +63,9 @@ console.log("blog name",blogs);
                 ) : error ? (
                     <div className="text-red-500">{error}</div>
                 ) : (
-                    <Slider {...settings} className="blog-slider py-6"> {/* Wrap blog cards in Slider */}
-                        {
+                    <Slider {...settings} className="blog-slider py-6">
+                        
+                        {                     
                             // Fixing the condition to check if blogs is empty
                             blogs.length > 0 ? (
                                 blogs.map((blog) => (
@@ -72,8 +74,9 @@ console.log("blog name",blogs);
                                     </div>
                                 ))
                             ) : (
-                                <div>No blogs available.</div> // Optional: Message when no blogs are present
+                                <div>No blogs available.</div> 
                             )
+                            
                         }
                     
                     </Slider>

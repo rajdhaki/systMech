@@ -38,37 +38,37 @@ const BlogPost = () => {
     return <div className="flex justify-center items-center h-screen">Blog post not found</div>;
   }
 
-  const handlePrevious = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/post`); // Fetch all posts
-      const posts = response.data;
-      const currentIndex = posts.findIndex(post => post.id === parseInt(id));
-      if (currentIndex > 0) {
-        navigate(`/post/${posts[currentIndex - 1].id}`); // Navigate to previous post
-      } else {
-        console.warn("No previous post available.");
-      }
-    } catch (err) {
-      console.error('Error fetching posts for navigation', err);
-    }
-  };
+  // const handlePrevious = async () => {
+  //   try {
+  //     const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/post`); // Fetch all posts
+  //     const posts = response.data;
+  //     const currentIndex = posts.findIndex(post => post.id === parseInt(id));
+  //     if (currentIndex > 0) {
+  //       navigate(`/post/${posts[currentIndex - 1].id}`); // Navigate to previous post
+  //     } else {
+  //       console.warn("No previous post available.");
+  //     }
+  //   } catch (err) {
+  //     console.error('Error fetching posts for navigation', err);
+  //   }
+  // };
 
-  const handleNext = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/post`); // Fetch all posts
-      const posts = response.data;
-      console.log(posts);
-      const currentIndex = posts.findIndex(post => post.id === parseInt(id));
-      console.log(currentIndex);
-      if (currentIndex < posts.length - 1) {
-        navigate(`/post/${posts[currentIndex + 1].id}`); // Navigate to next post
-      } else {
-        console.warn("No next post available.");
-      }
-    } catch (err) {
-      console.error('Error fetching posts for navigation', err);
-    }
-  };
+  // const handleNext = async () => {
+  //   try {
+  //     const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/post`); // Fetch all posts
+  //     const posts = response.data;
+  //     console.log(posts);
+  //     const currentIndex = posts.findIndex(post => post.id === parseInt(id));
+  //     console.log(currentIndex);
+  //     if (currentIndex < posts.length - 1) {
+  //       navigate(`/post/${posts[currentIndex + 1].id}`); // Navigate to next post
+  //     } else {
+  //       console.warn("No next post available.");
+  //     }
+  //   } catch (err) {
+  //     console.error('Error fetching posts for navigation', err);
+  //   }
+  // };
 
   const handleGoBack = () => {
     navigate(-1); // Navigate back to the previous page
@@ -77,7 +77,8 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-3xl mx-auto">
-        {blog.headings.map((heading, index) => (
+        {blog && blog.headings && blog.headings.length > 0 ? (
+        blog.headings.map((heading, index) => (
           <div key={index} className="mb-12">
             <h2 className="text-3xl font-extrabold text-gray-900 mb-6">{heading.title}</h2>
             {index === 0 ? (
@@ -92,7 +93,13 @@ const BlogPost = () => {
               <p>{heading.detail}</p>
             </div>
           </div>
-        ))}
+        )) 
+      ) : (
+        <div>No blogs available.</div> 
+    )
+    
+      
+      }
       </div>
 
       {/* next and previous button */}
