@@ -47,7 +47,7 @@ const Blog = ({ id }) => {
             }
         ]
     };
-// console.log("blog name",blogs);
+console.log("blog name",blogs);
 
     return (
         
@@ -63,11 +63,19 @@ const Blog = ({ id }) => {
                     <div className="text-red-500">{error}</div>
                 ) : (
                     <Slider {...settings} className="blog-slider py-6"> {/* Wrap blog cards in Slider */}
-                        {blogs.map((blog) => (
-                            <div key={blog._id} className="px-2"> {/* Add padding for spacing */}
-                                <BlogCard blog={blog} showReadMore={true} />
-                            </div>
-                        ))}
+                        {
+                            // Fixing the condition to check if blogs is empty
+                            blogs.length > 0 ? (
+                                blogs.map((blog) => (
+                                    <div key={blog._id} className="px-2"> {/* Add padding for spacing */}
+                                        <BlogCard blog={blog} showReadMore={true} />
+                                    </div>
+                                ))
+                            ) : (
+                                <div>No blogs available.</div> // Optional: Message when no blogs are present
+                            )
+                        }
+                    
                     </Slider>
                 )}
             </div>
