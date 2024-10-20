@@ -47,8 +47,10 @@ const Blog = ({ id }) => {
             }
         ]
     };
+console.log(blogs);
 
     return (
+        
         <div id={id} className='bg-white w-full min-h-screen overflow-x-hidden flex flex-col items-center justify-center'>
             <div className='w-full max-w-6xl px-4 sm:px-8 text-center md:mt-16'>
                 <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-3 '>Blogs</h1>
