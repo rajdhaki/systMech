@@ -6,29 +6,70 @@ import {systmetch} from './useSchema.js'
 import { Blog } from './blogCollection.js'
 import multer from 'multer'
 import path from 'path'
+import { fileURLToPath } from 'url'
+import fs from 'fs'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, 'uploads')
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true })
+}
 
 // Update Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, uploadDir)
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    // Get the file extension from the original filename
-    const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
-    cb(null, uniqueSuffix + ext);
+    // Generate a unique filename with original extension
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    const ext = path.extname(file.originalname).toLowerCase() || '.jpg'
+    const filename = uniqueSuffix + ext
+    
+    // Log the filename for debugging
+    console.log('Saving file:', filename)
+    
+    cb(null, filename)
   }
-});
+})
 
-const upload = multer({ storage }).fields([
+const upload = multer({ 
+  storage,
+  fileFilter: (req, file, cb) => {
+    // Allow only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true)
+    } else {
+      cb(new Error('Not an image! Please upload an image.'), false)
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+}).fields([
   { name: 'img', maxCount: 1 },
   { name: 'additionalImg0', maxCount: 1 },
   { name: 'additionalImg1', maxCount: 1 },
   { name: 'additionalImg2', maxCount: 1 },
   { name: 'additionalImg3', maxCount: 1 },
   { name: 'additionalImg4', maxCount: 1 },
-]);
+])
+
+// Add error handling middleware for multer
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    return res.status(400).json({
+      message: 'Upload error: ' + error.message
+    })
+  }
+  next(error)
+})
+
+// Serve static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 dotenv.config()
 const PORT = process.env.PORT || 8000
@@ -37,7 +78,6 @@ const app = express()
 dbConnect()
 app.use(cors({
     origin: [
-        'https://systmech.vercel.app',
         'https://systmech-q47qv36a7-raj-s-projects-8e708ad6.vercel.app',
         'http://localhost:5173'
     ],
@@ -47,7 +87,6 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use('/uploads', express.static('uploads'))
 
 app.get('/', (req, res) => {
     res.send("Hello there")
@@ -92,10 +131,12 @@ app.post('/post', upload, async (req, res) => {
     try {
         const { headings } = req.body;
         
-        // Store only the filename with uploads prefix
+        // Store the relative path to the image
         const imgUrl = req.files['img'] ? 
-            `uploads/${req.files['img'][0].filename}` : // Just store uploads/filename
+            `uploads/${req.files['img'][0].filename}` : 
             null;
+
+        console.log('Stored image URL:', imgUrl); // Debug log
 
         if (!headings || !imgUrl) {
             return res.status(400).json({ message: "Missing required fields" });
@@ -127,7 +168,7 @@ app.post('/post', upload, async (req, res) => {
         res.status(201).json(savedPost);
     }
     catch (error) {
-        console.error('Error:', error);
+        console.error('Error in post route:', error);
         res.status(500).json({ message: "Internal server error" });
     }
 });

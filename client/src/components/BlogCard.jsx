@@ -12,36 +12,38 @@ const BlogCard = ({ blog, showReadMore }) => {
   const getImageUrl = (imgPath) => {
     if (!imgPath) return 'https://via.placeholder.com/300x200';
     
-    // Clean up the path and ensure it has an extension
-    const cleanPath = imgPath.replace(/\\/g, '/').replace(/^uploads\/uploads\//, 'uploads/');
-    const hasExtension = /\.(jpg|jpeg|png|gif|webp)$/i.test(cleanPath);
-    
-    // If no extension, append .jpg
-    const finalPath = hasExtension ? cleanPath : `${cleanPath}.jpg`;
-    
-    return `${import.meta.env.VITE_BACKEND_URL}/${finalPath}`;
+    try {
+      // Make sure we're using forward slashes and no duplicate 'uploads'
+      const cleanPath = imgPath.replace(/\\/g, '/').replace(/^uploads\/uploads\//, 'uploads/');
+      
+      // Construct the full URL
+      const fullUrl = `${import.meta.env.VITE_BACKEND_URL}/${cleanPath}`;
+      
+      // Log the URL for debugging
+      console.log('Attempting to load image:', fullUrl);
+      
+      return fullUrl;
+    } catch (error) {
+      console.error('Error constructing image URL:', error);
+      return 'https://via.placeholder.com/300x200';
+    }
   };
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden h-[65vh]">
-      <img 
-        src={getImageUrl(blog.imgUrl)}
-        alt={title} 
-        className="w-full h-40 object-cover"
-        onError={(e) => {
-          console.error('Image failed to load:', e.target.src);
-          e.target.onerror = null;
-          // Try different extensions if the image fails to load
-          const currentSrc = e.target.src;
-          if (currentSrc.endsWith('.jpg')) {
-            e.target.src = currentSrc.replace('.jpg', '.png');
-          } else if (currentSrc.endsWith('.png')) {
-            e.target.src = currentSrc.replace('.png', '.webp');
-          } else {
+      <div className="relative w-full h-40">
+        <img 
+          src={getImageUrl(blog.imgUrl)}
+          alt={title} 
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Image failed to load:', e.target.src);
+            e.target.onerror = null;
             e.target.src = 'https://via.placeholder.com/300x200';
-          }
-        }}
-      />
+          }}
+          loading="lazy" // Add lazy loading
+        />
+      </div>
       <div className="p-3">
         <h2 className="text-xl font-semibold mb-2">{title}</h2>
         <p className="text-gray-600 text-sm mb-4">
