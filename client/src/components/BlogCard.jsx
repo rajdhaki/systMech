@@ -12,9 +12,14 @@ const BlogCard = ({ blog, showReadMore }) => {
   const getImageUrl = (imgPath) => {
     if (!imgPath) return 'https://via.placeholder.com/300x200';
     
-    // Make sure we're using forward slashes and no duplicate 'uploads'
+    // Clean up the path and ensure it has an extension
     const cleanPath = imgPath.replace(/\\/g, '/').replace(/^uploads\/uploads\//, 'uploads/');
-    return `${import.meta.env.VITE_BACKEND_URL}/${cleanPath}`;
+    const hasExtension = /\.(jpg|jpeg|png|gif|webp)$/i.test(cleanPath);
+    
+    // If no extension, append .jpg
+    const finalPath = hasExtension ? cleanPath : `${cleanPath}.jpg`;
+    
+    return `${import.meta.env.VITE_BACKEND_URL}/${finalPath}`;
   };
 
   return (
@@ -26,7 +31,15 @@ const BlogCard = ({ blog, showReadMore }) => {
         onError={(e) => {
           console.error('Image failed to load:', e.target.src);
           e.target.onerror = null;
-          e.target.src = 'https://via.placeholder.com/300x200';
+          // Try different extensions if the image fails to load
+          const currentSrc = e.target.src;
+          if (currentSrc.endsWith('.jpg')) {
+            e.target.src = currentSrc.replace('.jpg', '.png');
+          } else if (currentSrc.endsWith('.png')) {
+            e.target.src = currentSrc.replace('.png', '.webp');
+          } else {
+            e.target.src = 'https://via.placeholder.com/300x200';
+          }
         }}
       />
       <div className="p-3">
@@ -38,7 +51,7 @@ const BlogCard = ({ blog, showReadMore }) => {
       </div>
       
       {showReadMore && (
-        <Link to={`/blog/${blog._id}`} className='inline-block px-4  text-blue-800  hover:text-blue-600 transition-colors text-sm '>
+        <Link to={`/blog/${blog._id}`} className='inline-block px-4 text-blue-800 hover:text-blue-600 transition-colors text-sm'>
           Read More
         </Link>
       )}
