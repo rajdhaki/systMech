@@ -8,21 +8,28 @@ import multer from 'multer'
 
 
 // Update the Multer configuration
-const upload = multer({
-  dest: 'uploads/',
-  fileFilter: (req, file, cb) => {
-    // You can add file type validation here if needed
-    cb(null, true);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'uploads')
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)){
+      fs.mkdirSync(uploadDir, { recursive: true })
+    }
+    cb(null, uploadDir)
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
   }
-}).fields([
+})
+
+const upload = multer({ storage: storage }).fields([
   { name: 'img', maxCount: 1 },
   { name: 'additionalImg0', maxCount: 1 },
   { name: 'additionalImg1', maxCount: 1 },
   { name: 'additionalImg2', maxCount: 1 },
   { name: 'additionalImg3', maxCount: 1 },
   { name: 'additionalImg4', maxCount: 1 },
-  // Add more fields as needed
-]);
+])
 
 dotenv.config()
 const PORT = process.env.PORT || 8000
@@ -30,8 +37,7 @@ const PORT = process.env.PORT || 8000
 const app = express()
 dbConnect()
 app.use(cors({
-	origin:  'process.env.FRONTEND_URL ',
-    // || http://localhost:5173
+	origin: process.env.FRONTEND_URL,
 	credentials: true
 }))
 app.use(express.json())
@@ -107,8 +113,11 @@ app.post('/post', upload, async (req, res) => {
         res.status(201).json(savedPost);
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error('Error details:', error);
+        res.status(500).json({ 
+            message: "Internal server error",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 })
 
@@ -193,6 +202,15 @@ app.delete('/post/:id', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
+});
+
+// Add global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    message: 'Something broke!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
 app.listen(PORT, ()=>console.log(`app is running at ${PORT}`))

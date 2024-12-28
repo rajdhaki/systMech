@@ -8,7 +8,9 @@ const BlogCard = ({ blog, showReadMore }) => {
 
   const title = blog.headings[0].title || 'Untitled';
   const content = blog.headings[0].detail || 'No content available';
-  const imageUrl = blog.imgUrl ? `${import.meta.env.VITE_BACKEND_URL}/${blog.imgUrl}` : 'https://via.placeholder.com/300x200';
+  const imageUrl = blog.imgUrl ? 
+    `${import.meta.env.VITE_BACKEND_URL}/${blog.imgUrl}` : 
+    'https://via.placeholder.com/300x200';
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden h-[65vh] "> {/* Set fixed height and width */}
@@ -16,6 +18,10 @@ const BlogCard = ({ blog, showReadMore }) => {
         src={imageUrl}
         alt={title} 
         className="w-full h-40 object-cover"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = 'https://via.placeholder.com/300x200';
+        }}
       />
       <div className="p-3">
         <h2 className="text-xl font-semibold mb-2">{title}</h2>
