@@ -98,7 +98,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+
   console.log(import.meta.env.VITE_BACKEND_URL)
+
+  // dotenv.config()
+  // console.log(import.meta.env.VITE_BACKEND_URL)
+
   return (
     <div className="overflow-x-hidden">
       <RouterProvider router={router} />

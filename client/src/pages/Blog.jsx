@@ -48,7 +48,10 @@ const Blog = ({ id }) => {
         ]
     };
 
+
+
     return (
+        
         <div id={id} className='bg-white w-full min-h-screen overflow-x-hidden flex flex-col items-center justify-center'>
             <div className='w-full max-w-6xl px-4 sm:px-8 text-center md:mt-16'>
                 <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-3 '>Blogs</h1>
@@ -60,12 +63,22 @@ const Blog = ({ id }) => {
                 ) : error ? (
                     <div className="text-red-500">{error}</div>
                 ) : (
-                    <Slider {...settings} className="blog-slider py-6"> {/* Wrap blog cards in Slider */}
-                        {blogs.map((blog) => (
-                            <div key={blog._id} className="px-2"> {/* Add padding for spacing */}
-                                <BlogCard blog={blog} showReadMore={true} />
-                            </div>
-                        ))}
+                    <Slider {...settings} className="blog-slider py-6">
+                        
+                        {                     
+                            // Fixing the condition to check if blogs is empty
+                            blogs.length > 0 ? (
+                                blogs.map((blog) => (
+                                    <div key={blog._id} className="px-2"> {/* Add padding for spacing */}
+                                        <BlogCard blog={blog} showReadMore={true} />
+                                    </div>
+                                ))
+                            ) : (
+                                <div>No blogs available.</div> 
+                            )
+                            
+                        }
+                    
                     </Slider>
                 )}
             </div>

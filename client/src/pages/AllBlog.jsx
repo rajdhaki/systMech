@@ -31,6 +31,7 @@ const AllBlog = () => {
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
   const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
+
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -51,11 +52,18 @@ const AllBlog = () => {
           Explore Our <span className="text-blue-600">Blog</span>
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-8">
-          {currentBlogs.map((blog) => (
-            <Link key={blog._id} to={`/blog/${blog._id}`}>
-              <BlogCard blog={blog} />
-            </Link>
-          ))}
+          {console.log("current blog", currentBlogs)}
+          {
+            currentBlogs.length > 0 ? (
+              currentBlogs.map((blog) => (
+                <Link key={blog._id} to={`/blog/${blog._id}`}>
+                  <BlogCard blog={blog} />
+                </Link>
+              ))
+            ) : (
+              <div> Currently No blogs available.</div> 
+            )
+          }
         </div>
         <div className="flex justify-center mt-8">
           <Pagination

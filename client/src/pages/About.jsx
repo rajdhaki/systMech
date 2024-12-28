@@ -80,7 +80,6 @@ const About = ({ id }) => {
 
       <div  className='mt-8 py-6 px-4 md:px-12 lg:px-48'>
         <Slider  {...settings}>
-          
           {certificates.map((cert, index) => (
             <div key={index} className="px-7">
               <img 
