@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const BlogCard = ({ blog, showReadMore }) => {
+  const [imageError, setImageError] = useState(false);
+
   if (!blog || !blog.headings || blog.headings.length === 0) {
     return null;
   }
@@ -10,22 +12,38 @@ const BlogCard = ({ blog, showReadMore }) => {
   const content = blog.headings[0].detail || 'No content available';
   
   const getImageUrl = (imgPath) => {
-    if (!imgPath) return 'https://via.placeholder.com/300x200';
+    if (!imgPath || imageError) return 'https://via.placeholder.com/300x200';
     
     try {
-      // Make sure we're using forward slashes and no duplicate 'uploads'
+      // Clean up the path
       const cleanPath = imgPath.replace(/\\/g, '/').replace(/^uploads\/uploads\//, 'uploads/');
       
       // Construct the full URL
       const fullUrl = `${import.meta.env.VITE_BACKEND_URL}/${cleanPath}`;
-      
-      // Log the URL for debugging
       console.log('Attempting to load image:', fullUrl);
-      
       return fullUrl;
     } catch (error) {
       console.error('Error constructing image URL:', error);
       return 'https://via.placeholder.com/300x200';
+    }
+  };
+
+  const handleImageError = async (e) => {
+    console.error('Image failed to load:', e.target.src);
+    
+    try {
+      // Try to check if the image exists on the server
+      const imagePath = blog.imgUrl.split('/').pop();
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/check-image/${imagePath}`);
+      const data = await response.json();
+      
+      if (!data.exists) {
+        console.log('Image does not exist on server:', data.path);
+        setImageError(true);
+      }
+    } catch (error) {
+      console.error('Error checking image:', error);
+      setImageError(true);
     }
   };
 
@@ -36,13 +54,14 @@ const BlogCard = ({ blog, showReadMore }) => {
           src={getImageUrl(blog.imgUrl)}
           alt={title} 
           className="w-full h-full object-cover"
-          onError={(e) => {
-            console.error('Image failed to load:', e.target.src);
-            e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/300x200';
-          }}
-          loading="lazy" // Add lazy loading
+          onError={handleImageError}
+          loading="lazy"
         />
+        {imageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+            <span className="text-gray-500">Image not available</span>
+          </div>
+        )}
       </div>
       <div className="p-3">
         <h2 className="text-xl font-semibold mb-2">{title}</h2>

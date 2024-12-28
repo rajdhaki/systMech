@@ -27,12 +27,7 @@ const storage = multer.diskStorage({
     // Generate a unique filename with original extension
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
     const ext = path.extname(file.originalname).toLowerCase() || '.jpg'
-    const filename = uniqueSuffix + ext
-    
-    // Log the filename for debugging
-    console.log('Saving file:', filename)
-    
-    cb(null, filename)
+    cb(null, uniqueSuffix + ext)
   }
 })
 
@@ -70,6 +65,18 @@ app.use((error, req, res, next) => {
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
+// Add a route to check if images are accessible
+app.get('/check-image/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filepath = path.join(__dirname, 'uploads', filename);
+  
+  if (fs.existsSync(filepath)) {
+    res.json({ exists: true, path: filepath });
+  } else {
+    res.json({ exists: false, path: filepath });
+  }
+});
 
 dotenv.config()
 const PORT = process.env.PORT || 8000
