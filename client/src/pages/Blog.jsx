@@ -22,6 +22,7 @@ const Blog = ({ id }) => {
                 setLoading(false);
             }
         };
+console.log(Blog);
 
         fetchBlogs();
     }, []);

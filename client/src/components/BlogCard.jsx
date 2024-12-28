@@ -8,17 +8,23 @@ const BlogCard = ({ blog, showReadMore }) => {
 
   const title = blog.headings[0].title || 'Untitled';
   const content = blog.headings[0].detail || 'No content available';
-  const imageUrl = blog.imgUrl ? 
-    `${import.meta.env.VITE_BACKEND_URL}/${blog.imgUrl}` : 
-    'https://via.placeholder.com/300x200';
+  
+  const getImageUrl = (imgPath) => {
+    if (!imgPath) return 'https://via.placeholder.com/300x200';
+    
+    // Make sure we're using forward slashes and no duplicate 'uploads'
+    const cleanPath = imgPath.replace(/\\/g, '/').replace(/^uploads\/uploads\//, 'uploads/');
+    return `${import.meta.env.VITE_BACKEND_URL}/${cleanPath}`;
+  };
 
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden h-[65vh] "> {/* Set fixed height and width */}
+    <div className="bg-white shadow-md rounded-lg overflow-hidden h-[65vh]">
       <img 
-        src={imageUrl}
+        src={getImageUrl(blog.imgUrl)}
         alt={title} 
         className="w-full h-40 object-cover"
         onError={(e) => {
+          console.error('Image failed to load:', e.target.src);
           e.target.onerror = null;
           e.target.src = 'https://via.placeholder.com/300x200';
         }}

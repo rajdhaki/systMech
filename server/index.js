@@ -5,31 +5,29 @@ import { dbConnect } from './dbConnect.js'
 import {systmetch} from './useSchema.js'
 import { Blog } from './blogCollection.js'
 import multer from 'multer'
+import path from 'path'
 
 
-// Update the Multer configuration
+// Update Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, 'uploads')
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)){
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-    cb(null, uploadDir)
+    cb(null, 'uploads/'); // Use relative path
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
+    // Generate a unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   }
-})
+});
 
-const upload = multer({ storage: storage }).fields([
+const upload = multer({ storage }).fields([
   { name: 'img', maxCount: 1 },
   { name: 'additionalImg0', maxCount: 1 },
   { name: 'additionalImg1', maxCount: 1 },
   { name: 'additionalImg2', maxCount: 1 },
   { name: 'additionalImg3', maxCount: 1 },
   { name: 'additionalImg4', maxCount: 1 },
-])
+]);
 
 dotenv.config()
 const PORT = process.env.PORT || 8000
@@ -37,7 +35,8 @@ const PORT = process.env.PORT || 8000
 const app = express()
 dbConnect()
 app.use(cors({
-	origin: process.env.FRONTEND_URL,
+	origin:  'http://localhost:5173',
+    // process.env.FRONTEND_URL ||
 	credentials: true
 }))
 app.use(express.json())
@@ -50,6 +49,7 @@ app.get('/', (req, res) => {
 
 
 app.post('/creatUser', (req, res) => {
+console.log(req.body);
 
     const User = new systmetch(req.body)
     User.save().then(() => { res.status(201); console.log(User) }).catch((e) => res.status(400))
@@ -85,7 +85,11 @@ app.post('/login', async (req, res) => {
 app.post('/post', upload, async (req, res) => {
     try {
         const { headings } = req.body;
-        const imgUrl = req.files['img'] ? req.files['img'][0].path : null;
+        
+        // Store only the filename with uploads prefix
+        const imgUrl = req.files['img'] ? 
+            `uploads/${req.files['img'][0].filename}` : // Just store uploads/filename
+            null;
 
         if (!headings || !imgUrl) {
             return res.status(400).json({ message: "Missing required fields" });
@@ -97,9 +101,14 @@ app.post('/post', upload, async (req, res) => {
         for (let i = 0; i < 5; i++) {
             const fieldName = `additionalImg${i}`;
             if (req.files[fieldName]) {
-                additionalImages.push(req.files[fieldName][0].path);
+                // Store additional images with uploads prefix
+                additionalImages.push(`uploads/${req.files[fieldName][0].filename}`);
             }
         }
+
+        // Log the paths being stored
+        console.log('Storing image URL:', imgUrl);
+        console.log('Storing additional images:', additionalImages);
 
         const newPost = new Blog({
             imgUrl,
@@ -108,18 +117,14 @@ app.post('/post', upload, async (req, res) => {
         });
 
         const savedPost = await newPost.save();
-        
-        console.log(savedPost);
+        console.log('Saved post:', savedPost);
         res.status(201).json(savedPost);
     }
     catch (error) {
-        console.error('Error details:', error);
-        res.status(500).json({ 
-            message: "Internal server error",
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
+        console.error('Error:', error);
+        res.status(500).json({ message: "Internal server error" });
     }
-})
+});
 
 
 app.get('/post', async (req, res) => {
@@ -202,15 +207,6 @@ app.delete('/post/:id', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
-});
-
-// Add global error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something broke!',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
 });
 
 app.listen(PORT, ()=>console.log(`app is running at ${PORT}`))
