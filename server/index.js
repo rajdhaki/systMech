@@ -36,6 +36,7 @@ const app = express()
 dbConnect()
 app.use(cors({
     origin: [
+        'https://systmech.vercel.app',
         'https://systmech-q47qv36a7-raj-s-projects-8e708ad6.vercel.app',
         'http://localhost:5173'
     ],
