@@ -5,7 +5,7 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/f
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 py-3 px-4 md:px-8 z-10">
+    <footer className="bg-gray-100 py-4 px-4 md:px-8 z-10">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
 
         
@@ -16,16 +16,16 @@ const Footer = () => {
 
         <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
           <div className="flex space-x-4 mb-2">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <a href="https://www.facebook.com/profile.php?id=61568359271032 " target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors">
               <FaFacebookF size={24} />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-400 transition-colors">
+            <a href="https://x.com/home " target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-400 transition-colors">
               <FaTwitter size={24} />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-700 transition-colors">
+            <a href="https://www.linkedin.com/company/systmechsolutions/?viewAsMember=true " target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-700 transition-colors">
               <FaLinkedinIn size={24} />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-pink-600 transition-colors">
+            <a href="https://www.instagram.com/systmech/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-pink-600 transition-colors">
               <FaInstagram size={24} />
             </a>
           </div>

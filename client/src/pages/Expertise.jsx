@@ -34,12 +34,12 @@ const Expertise = ({id}) => {
     return (
         <div id={id} className="min-h-screen bg-white px-4 sm:px-6 lg:px-8 flex flex-col py-6 overflow-x-hidden">
             <div className="flex-grow flex flex-col justify-center max-w-7xl mx-auto w-full">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl  font-bold text-center mt-14 mb-8 sm:mb-12 text-gray-800">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mt-14 mb-3  text-gray-800">
                     Our <span className="text-blue-600">EXPERTISE</span> can elevate your business to new <span className="text-blue-600">HEIGHTS</span>
                 </h1>
 
                 <div className="flex flex-col md:flex-row gap-6 lg:gap-10 flex-grow">
-                    <div className="md:w-1/4 flex-shrink-0">
+                    <div className="md:w-1/4 flex-shrink-0 mt-6">
                         <ExpertiseList
                             items={[
                                 "Sales Cloud",
@@ -68,7 +68,7 @@ const Expertise = ({id}) => {
                         </div>
                     </div>
 
-                    <div className="md:w-1/4 flex-shrink-0">
+                    <div className="md:w-1/4 flex-shrink-0 ">
                         <ExpertiseList
                             items={[
                                 "Revenue Cloud",

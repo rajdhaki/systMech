@@ -41,7 +41,7 @@ const Service = ({id}) => {
         <div className=' flex  items-center justify-center flex-col md:flex-row  mt-10 text-center'>
           <h1 className='text-5xl font-extrabold text-gray-800 mb-4'>Services</h1>
           <p className='text-2xl text-gray-600 max-w-2xl mx-14'>
-            Empowering clients through innovative solutions and reliable support, ensuring success and satisfaction.
+          Empowering clients with innovative solutions and reliable support to ensure success and satisfaction.
           </p>
         </div>
         <div className='px-4 sm:px-8 md:px-14 flex justify-center'>
@@ -60,7 +60,7 @@ const Service = ({id}) => {
                 <ServiceCart
                   imageUrl={service2}
                   heading="Salesforce Managed Services"
-                  paragraph="We offer Salesforce Managed Services for ongoing support, maintenance, and optimization of Salesforce platforms, ensuring smooth operations, customizations, and scalability, allowing businesses to focus on growth while we handle technical needs"
+                  paragraph="We offer Salesforce Managed Services for ongoing support, maintenance, and optimization of Salesforce platforms, ensuring smooth operations, customizations, and scalability, allowing businesses to focus on growth while we handle technical needs."
                 />
               </div>
 

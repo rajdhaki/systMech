@@ -60,8 +60,8 @@ const Navbar = () => {
       <div className="bg-transparent backdrop-blur-md">
         <div className="container mx-auto px-4 md:px-24">
           <div className="flex items-center justify-between py-4">
-            <div className="flex justify-center gap-1 items-center cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
-              <span><img className='w-12 mt-2' src={logo} alt="" /></span>
+            <div className="flex justify-center gap-2 items-center cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
+              <span><img className='w-11 mt-2' src={logo} alt="" /></span>
               <span className="text-2xl md:text-4xl font-bold text-gray-800">SystMech</span>
             </div>
 

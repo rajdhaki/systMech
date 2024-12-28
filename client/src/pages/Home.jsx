@@ -23,7 +23,7 @@ const Home = ({id}) => {
             <h1 className="text-3xl md:text-6xl font-bold mb-6 tracking-tight ">Simplifying Salesforce Consultancy</h1>
             <h3 className="text-xl md:text-xl mb-1 leading-relaxed">We provide tailored CRM solutions for your</h3>
 
-            <h3 className="text-xl md:text-xl ">Unique business requirements</h3>
+            <h3 className="text-xl md:text-xl ">unique business requirements</h3>
           </div >
 
           <div className='mt-4 md:mt-8 text-center md:text-left'>

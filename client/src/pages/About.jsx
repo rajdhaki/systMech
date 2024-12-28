@@ -65,7 +65,7 @@ const About = ({ id }) => {
           <div className='text-center md:text-left'>
             <h1 className='text-3xl md:text-5xl font-bold mb-4 text-gray-800'>We <span className='text-blue-600'>SUCCEED</span> when our customers<span className='text-blue-600'> SUCCEED</span></h1>
             <p className='text-base md:text-xl text-gray-800'>
-            At SystMech, we understand the unique challenges and opportunities within the Salesforce ecosystem. Whether you’re a startup forging new paths or an established enterprise refining your Salesforce CRM operations, we deliver exceptional value and transformative results tailored to your specific business needs. We stand by our belief that our customers' success is our success. ​
+            At SystMech, we understand the unique challenges and opportunities within the Salesforce ecosystem. Whether you’re a startup forging new paths or an established enterprise refining your Salesforce CRM operations, we deliver exceptional value and transformative results tailored to your specific business needs. We believe that our customers' success is our success. ​
             </p>
           </div>
         </div>
