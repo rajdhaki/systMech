@@ -39,7 +39,7 @@ const Expertise = ({id}) => {
                 </h1>
 
                 <div className="flex flex-col md:flex-row gap-6 lg:gap-10 flex-grow">
-                    <div className="md:w-1/4 flex-shrink-0 mt-6">
+                    <div className="md:w-1/4 mb-[5.9rem] ">
                         <ExpertiseList
                             items={[
                                 "Sales Cloud",
@@ -48,10 +48,10 @@ const Expertise = ({id}) => {
                                 "Field Service Lightning"
                             ]}
                             paras={[
-                                "Unify sales, billing, and revenue recognition processes.",
-                                "Create and manage quotes, proposals, and pricing with ease.",
-                                "Automates invoicing, payments, and revenue recognition for businesses.",
-                                "Manage customer agreements and recurring revenue models effectively. "
+                                "Streamlines sales process, automates tasks and boosts productivity. ",
+                                "Enhance customer support with automation and insights.",
+                                "Builds branded portals for customer engagement and collaboration.",
+                                "Optimizes field operations and workforce management. "
                             ]}
                         />
                     </div>
@@ -68,19 +68,19 @@ const Expertise = ({id}) => {
                         </div>
                     </div>
 
-                    <div className="md:w-1/4 flex-shrink-0 ">
+                    <div className="md:w-1/4 ">
                         <ExpertiseList
                             items={[
-                                "Revenue Cloud",
-                                "CPQ",
-                                "Billing",
-                                "Contracts & Subscriptions Management"
+                                "Salesforce Revenue Cloud",
+                                "Salesforce CPQ",
+                                "Salesforce Billing ",
+                                "Salesforce Contracts & Subscriptions Management "
                             ]}
                             paras={[
-                                "Streamlines sales process, automates tasks, and boosts productivity.",
-                                "Enhance customer support with automation and insights.",
-                                "Builds branded portals for customer engagement and collaboration.",
-                                "Optimizes field operations and workforce management."
+                                "Unify sales, billing, and revenue recognition processes.",
+                                "Create and manage quotes, proposals, and pricing with ease. ",
+                                "Automates invoicing, payments, and revenue recognition for businesses. ",
+                                "Manage customer agreements and recurring revenue models effectively."
                             ]}
                         />
                     </div>
