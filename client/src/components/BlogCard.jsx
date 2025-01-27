@@ -53,7 +53,7 @@ const BlogCard = ({ blog, showReadMore }) => {
         <img 
           src={getImageUrl(blog.imgUrl)}
           alt={title} 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-fill"
           onError={handleImageError}
           loading="lazy"
         />
