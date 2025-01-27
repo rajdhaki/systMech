@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
@@ -23,7 +23,4 @@ export default {
             lineClamp: ['hover'],
         },
     },
-    plugins: [
-        require('@tailwindcss/line-clamp'),
-    ],
 }
