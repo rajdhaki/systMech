@@ -83,6 +83,7 @@ const Contact = ({id}) => {
                         <button
                             className={` bg-[#032e61] hover:bg-[#00a1e0] text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out`}
                             type="submit"
+                            name='submit'
                         >
                             Submit
                         </button>
