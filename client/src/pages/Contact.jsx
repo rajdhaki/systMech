@@ -34,8 +34,8 @@ const Contact = ({id}) => {
                         <div className="md:w-[48%] mb-4 md:mb-0">
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="firstName"
-                                name='firstName'
+                                id="first_Name"
+                                name='first_Name'
                                 type="text"
                                 placeholder="Enter your first name"
                                 maxlength="40"
@@ -45,8 +45,8 @@ const Contact = ({id}) => {
                         <div className="md:w-[48%]">
                             <input
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="lastName"
-                                name='lastName'
+                                id="last_Name"
+                                name='last_Name'
                                 type="text"
                                 placeholder="Enter your last name"
                                 maxlength="80"
