@@ -25,11 +25,11 @@ const Contact = ({id}) => {
                 <h1 className="text-2xl md:text-4xl font-bold mb-6 text-center md:text-left">
                     Contact The <span className='text-blue-600' >SystMech</span>  Team: Unlock Your Next Success Story!
                 </h1>
-                <form action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00Dau000002QOqL" method="POST" className="bg-white bg-opacity-20 backdrop-blur-md rounded-lg shadow-lg px-6 py-8 mb-4">
+                <form action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DdN00000HlwQ9" method="POST" className="bg-white bg-opacity-20 backdrop-blur-md rounded-lg shadow-lg px-6 py-8 mb-4">
 
 
                     <div className="mb-4 flex flex-col md:flex-row md:justify-between">
-                        <input type="hidden" name="oid" value="00Dau000002QOqL" />
+                        <input type="hidden" name="oid" value="00DdN00000HlwQ9" />
                         <input type="hidden" name="retURL" value="https://www.systmechsolutions.com/" />
                         <div className="md:w-[48%] mb-4 md:mb-0">
                             <input
