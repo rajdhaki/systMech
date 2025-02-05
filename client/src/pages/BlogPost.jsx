@@ -78,37 +78,32 @@ const BlogPost = () => {
     <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-3xl mx-auto">
         {blog && blog.headings && blog.headings.length > 0 ? (
-        blog.headings.map((heading, index) => (
-          <div key={index} className="mb-12">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-6">{heading.title}</h2>
-            {index === 0 ? (
-              <img src={`${import.meta.env.VITE_BACKEND_URL}/${blog.imgUrl}`} alt={heading.title} className="w-full h-full object-cover rounded-lg mb-6" />
-            ) : blog.additionalImages && blog.additionalImages[index - 1] ? (
-              <img src={`${import.meta.env.VITE_BACKEND_URL}/${blog.additionalImages[index - 1]}`} alt={heading.title} className="w-full h-64 object-cover rounded-lg mb-6" />
-            ) : null}
-            <p className="text-gray-600 mb-4">
-              {index === 0 ? `Published on: ${new Date(blog.createdAt).toLocaleDateString()}` : ''}
-            </p>
-            <div className="prose max-w-none">
-              <p className="text-gray-700 mb-4">{heading.detail}</p>
-              {Array.isArray(heading.bulletPoints) && heading.bulletPoints.length > 0 && heading.bulletPoints[0] !== '' && (
-                <div className="mt-4">
-                  <ul className="list-disc list-inside space-y-2">
+          blog.headings.map((heading, index) => (
+            <div key={index} className="mb-12">
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-6">{heading.title}</h2>
+              {index === 0 ? (
+                <img src={`${import.meta.env.VITE_BACKEND_URL}/${blog.imgUrl}`} alt={heading.title} className="w-full h-full object-cover rounded-lg mb-6" />
+              ) : blog.additionalImages && blog.additionalImages[index - 1] ? (
+                <img src={`${import.meta.env.VITE_BACKEND_URL}/${blog.additionalImages[index - 1]}`} alt={heading.title} className="w-full h-64 object-cover rounded-lg mb-6" />
+              ) : null}
+              <p className="text-gray-600 mb-4">
+                {index === 0 ? `Published on: ${new Date(blog.createdAt).toLocaleDateString()}` : ''}
+              </p>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 mb-4">{heading.detail}</p>
+                {heading.bulletPoints && heading.bulletPoints.length > 0 && heading.bulletPoints[0] !== '' && (
+                  <ul className="list-disc list-inside space-y-2 ml-4">
                     {heading.bulletPoints.map((bullet, i) => (
-                      <li key={i} className="text-gray-700 ml-4">{bullet}</li>
+                      <li key={i} className="text-gray-700">{bullet}</li>
                     ))}
                   </ul>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        )) 
-      ) : (
-        <div>No blogs available.</div> 
-    )
-    
-      
-      }
+          ))
+        ) : (
+          <div>No blogs available.</div>
+        )}
       </div>
 
       {/* next and previous button */}

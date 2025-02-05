@@ -138,31 +138,29 @@ app.post('/post', upload, async (req, res) => {
     try {
         const { headings } = req.body;
         
-        // Store the relative path to the image
         const imgUrl = req.files['img'] ? 
             `uploads/${req.files['img'][0].filename}` : 
             null;
-
-        console.log('Stored image URL:', imgUrl); // Debug log
 
         if (!headings || !imgUrl) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        const parsedHeadings = JSON.parse(headings);
+        let parsedHeadings = JSON.parse(headings);
+        
+        // Ensure bulletPoints is properly initialized for each heading
+        parsedHeadings = parsedHeadings.map(heading => ({
+            ...heading,
+            bulletPoints: heading.bulletPoints || []
+        }));
 
         const additionalImages = [];
         for (let i = 0; i < 5; i++) {
             const fieldName = `additionalImg${i}`;
             if (req.files[fieldName]) {
-                // Store additional images with uploads prefix
                 additionalImages.push(`uploads/${req.files[fieldName][0].filename}`);
             }
         }
-
-        // Log the paths being stored
-        console.log('Storing image URL:', imgUrl);
-        console.log('Storing additional images:', additionalImages);
 
         const newPost = new Blog({
             imgUrl,
@@ -176,7 +174,7 @@ app.post('/post', upload, async (req, res) => {
     }
     catch (error) {
         console.error('Error in post route:', error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error", error: error.message });
     }
 });
 

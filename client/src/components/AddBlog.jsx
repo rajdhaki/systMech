@@ -96,7 +96,13 @@ const AddBlog = () => {
       }
     });
     
-    const headings = sections.map(section => section.heading);
+    const headings = sections.map(section => ({
+      title: section.heading.title,
+      detail: section.heading.detail,
+      bulletPoints: section.heading.bulletPoints.filter(bullet => bullet.trim() !== '') // Filter out empty bullet points
+    }));
+
+    console.log('Submitting headings:', headings); // Debug log
     formData.append('headings', JSON.stringify(headings));
 
     try {
@@ -105,6 +111,7 @@ const AddBlog = () => {
       });
       console.log('Blog added successfully:', response.data);
       toast.success('Blog post added successfully!');
+      // Reset form
       setSections([{ 
         photo: null, 
         photoPreview: null, 
