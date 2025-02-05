@@ -90,13 +90,15 @@ const BlogPost = () => {
               {index === 0 ? `Published on: ${new Date(blog.createdAt).toLocaleDateString()}` : ''}
             </p>
             <div className="prose max-w-none">
-              <p>{heading.detail}</p>
-              {heading.bulletPoints && heading.bulletPoints.length > 0 && (
-                <ul className="list-disc pl-6 mt-4 space-y-2">
-                  {heading.bulletPoints.map((bullet, i) => (
-                    <li key={i} className="text-gray-700">{bullet}</li>
-                  ))}
-                </ul>
+              <p className="text-gray-700 mb-4">{heading.detail}</p>
+              {Array.isArray(heading.bulletPoints) && heading.bulletPoints.length > 0 && heading.bulletPoints[0] !== '' && (
+                <div className="mt-4">
+                  <ul className="list-disc list-inside space-y-2">
+                    {heading.bulletPoints.map((bullet, i) => (
+                      <li key={i} className="text-gray-700 ml-4">{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
           </div>
@@ -119,7 +121,7 @@ const BlogPost = () => {
         </button>
       </div> */}
       <div className="flex justify-center mt-8">
-        <button className="bg-gray-500 text-white py-2 px-4 rounded" onClick={handleGoBack}>
+        <button className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600" onClick={handleGoBack}>
           Go Back
         </button>
       </div>
