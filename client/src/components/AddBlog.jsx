@@ -3,11 +3,17 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const AddBlog = () => {
-
   const [sections, setSections] = useState([
-    { photo: null, photoPreview: null, heading: { title: '', detail: '' } }
+    { 
+      photo: null, 
+      photoPreview: null, 
+      heading: { 
+        title: '', 
+        detail: '',
+        bulletPoints: [''] // Initialize with one empty bullet point
+      } 
+    }
   ]);
 
   const handleSectionPhotoChange = (index, e) => {
@@ -34,12 +40,44 @@ const AddBlog = () => {
     setSections(updatedSections);
   };
 
+  // Add bullet point to a section
+  const addBulletPoint = (sectionIndex) => {
+    const updatedSections = [...sections];
+    if (!updatedSections[sectionIndex].heading.bulletPoints) {
+      updatedSections[sectionIndex].heading.bulletPoints = [];
+    }
+    updatedSections[sectionIndex].heading.bulletPoints.push('');
+    setSections(updatedSections);
+  };
+
+  // Remove bullet point from a section
+  const removeBulletPoint = (sectionIndex, bulletIndex) => {
+    const updatedSections = [...sections];
+    updatedSections[sectionIndex].heading.bulletPoints.splice(bulletIndex, 1);
+    setSections(updatedSections);
+  };
+
+  // Handle bullet point text change
+  const handleBulletPointChange = (sectionIndex, bulletIndex, value) => {
+    const updatedSections = [...sections];
+    updatedSections[sectionIndex].heading.bulletPoints[bulletIndex] = value;
+    setSections(updatedSections);
+  };
+
   const addSection = () => {
-    setSections([...sections, { photo: null, photoPreview: null, heading: { title: '', detail: '' } }]);
+    setSections([...sections, { 
+      photo: null, 
+      photoPreview: null, 
+      heading: { 
+        title: '', 
+        detail: '',
+        bulletPoints: [''] 
+      } 
+    }]);
   };
 
   const removeSection = (index) => {
-    if (index === 0) return; // Don't remove the first section
+    if (index === 0) return;
     const updatedSections = sections.filter((_, i) => i !== index);
     setSections(updatedSections);
   };
@@ -67,8 +105,15 @@ const AddBlog = () => {
       });
       console.log('Blog added successfully:', response.data);
       toast.success('Blog post added successfully!');
-      // Reset form
-      setSections([{ photo: null, photoPreview: null, heading: { title: '', detail: '' } }]);
+      setSections([{ 
+        photo: null, 
+        photoPreview: null, 
+        heading: { 
+          title: '', 
+          detail: '',
+          bulletPoints: [''] 
+        } 
+      }]);
     } catch (error) {
       console.error('Error adding blog:', error);
       toast.error('Error adding blog post. Please try again.');
@@ -80,17 +125,17 @@ const AddBlog = () => {
       <div className="max-w-2xl w-full mx-auto my-8 p-6 bg-gray-800 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-100">Add New Blog</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {sections.map((section, index) => (
-            <div key={index} className="space-y-4 p-4 bg-gray-700 rounded-lg">
+          {sections.map((section, sectionIndex) => (
+            <div key={sectionIndex} className="space-y-4 p-4 bg-gray-700 rounded-lg">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-300">
-                  {index === 0 ? 'Main Blog Photo' : `Additional Photo ${index}`}
+                  {sectionIndex === 0 ? 'Main Blog Photo' : `Additional Photo ${sectionIndex}`}
                 </label>
                 <input
                   type="file"
-                  onChange={(e) => handleSectionPhotoChange(index, e)}
+                  onChange={(e) => handleSectionPhotoChange(sectionIndex, e)}
                   className="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  required={index === 0}
+                  required={sectionIndex === 0}
                 />
                 {section.photoPreview && (
                   <img src={section.photoPreview} alt="Preview" className="mt-2 max-w-full h-32 object-cover rounded-md" />
@@ -99,25 +144,57 @@ const AddBlog = () => {
 
               <input
                 type="text"
-                placeholder={index === 0 ? "Main Heading" : `Additional Heading ${index}`}
+                placeholder={sectionIndex === 0 ? "Main Heading" : `Additional Heading ${sectionIndex}`}
                 value={section.heading.title}
-                onChange={(e) => handleSectionHeadingChange(index, 'title', e.target.value)}
+                onChange={(e) => handleSectionHeadingChange(sectionIndex, 'title', e.target.value)}
                 className="w-full p-2 bg-gray-600 text-gray-100 border border-gray-500 rounded-md"
-                required={index === 0}
+                required={sectionIndex === 0}
               />
+              
               <textarea
-                placeholder={index === 0 ? "Main Detail" : `Additional Detail ${index}`}
+                placeholder={sectionIndex === 0 ? "Main Detail" : `Additional Detail ${sectionIndex}`}
                 value={section.heading.detail}
-                onChange={(e) => handleSectionHeadingChange(index, 'detail', e.target.value)}
+                onChange={(e) => handleSectionHeadingChange(sectionIndex, 'detail', e.target.value)}
                 className="w-full p-2 bg-gray-600 text-gray-100 border border-gray-500 rounded-md"
                 rows="3"
-                required={index === 0}
-              ></textarea>
+                required={sectionIndex === 0}
+              />
 
-              {index > 0 && (
+              {/* Bullet Points Section */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">Bullet Points</label>
+                {section.heading.bulletPoints?.map((bullet, bulletIndex) => (
+                  <div key={bulletIndex} className="flex items-center space-x-2">
+                    <span className="text-gray-300">•</span>
+                    <input
+                      type="text"
+                      value={bullet}
+                      onChange={(e) => handleBulletPointChange(sectionIndex, bulletIndex, e.target.value)}
+                      placeholder="Enter bullet point"
+                      className="flex-1 p-2 bg-gray-600 text-gray-100 border border-gray-500 rounded-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeBulletPoint(sectionIndex, bulletIndex)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
                 <button
                   type="button"
-                  onClick={() => removeSection(index)}
+                  onClick={() => addBulletPoint(sectionIndex)}
+                  className="text-sm text-blue-400 hover:text-blue-300"
+                >
+                  + Add Bullet Point
+                </button>
+              </div>
+
+              {sectionIndex > 0 && (
+                <button
+                  type="button"
+                  onClick={() => removeSection(sectionIndex)}
                   className="text-sm text-red-400 hover:text-red-300"
                 >
                   Remove Section

@@ -1,14 +1,15 @@
 import mongoose from "mongoose"
 const headingSchema = new mongoose.Schema({
-    title: {
-      type: String,
-      required: true,
-    },
-    detail: {
-      type: String,
-      required: true,
-    },
-  });
+  title: {
+    type: String,
+    required: true,
+  },
+  detail: {
+    type: String,
+    required: true,
+  },
+  bulletPoints: [String] // Add this line for bullet points
+});
 
 const blogSchema = new mongoose.Schema({
     imgUrl: {

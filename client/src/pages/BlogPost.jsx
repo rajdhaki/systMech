@@ -91,6 +91,13 @@ const BlogPost = () => {
             </p>
             <div className="prose max-w-none">
               <p>{heading.detail}</p>
+              {heading.bulletPoints && heading.bulletPoints.length > 0 && (
+                <ul className="list-disc pl-6 mt-4 space-y-2">
+                  {heading.bulletPoints.map((bullet, i) => (
+                    <li key={i} className="text-gray-700">{bullet}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         )) 
