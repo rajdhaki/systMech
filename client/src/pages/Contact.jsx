@@ -40,6 +40,7 @@ const Contact = ({id}) => {
                                 placeholder="Enter your first name"
                                 maxlength="40"
                                 size="20"
+                                required
                             />
                         </div>
                         <div className="md:w-[48%]">
@@ -51,6 +52,7 @@ const Contact = ({id}) => {
                                 placeholder="Enter your last name"
                                 maxlength="80"
                                 size="20"
+                                required
                             />
                         </div>
                     </div>
@@ -63,6 +65,7 @@ const Contact = ({id}) => {
                             placeholder="Enter your email"
                             maxlength="80"
                             size="20"
+                            required
                         />
                     </div>
                     <div className="mb-4">
