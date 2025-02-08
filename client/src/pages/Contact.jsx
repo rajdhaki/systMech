@@ -15,10 +15,10 @@ const Contact = ({id}) => {
 
     return (
         <>
-        <div id={id} className="min-h-[93vh] mt-10 w-full bg-gradient-to-r from-[#00c4d8] via-[#d3e0b3] to-[#f5da71]  ">
+        <div id={id} className="min-h-[50vh] mt-10 w-full bg-gradient-to-r from-[#00c4d8] via-[#d3e0b3] to-[#f5da71]  ">
             <div className='flex flex-col md:flex-row justify-center items-center gap-11 p-4 md:p-8'>
             <div className="w-full md:w-1/3 max-w-md mb-8 md:mb-0">
-                <img className='w-full h-auto max-w-[200px] mx-auto md:max-w-[95%]' src={contact} alt="Contact" />
+                <img className='w-full h-auto max-w-[200px] mx-auto md:max-w-[89%]' src={contact} alt="Contact" />
             </div>
 
             <div className="w-full md:w-2/3 max-w-2xl mt-8">
