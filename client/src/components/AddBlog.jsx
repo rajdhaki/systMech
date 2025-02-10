@@ -98,23 +98,18 @@ const AddBlog = () => {
       }
     });
     
-    // Ensure each section has all required properties, even if empty
+    // Include all headings without filtering
     const headings = sections.map(section => ({
-      title: section.heading.title || '',
-      detail: section.heading.detail || '',
-      bulletPoints: Array.isArray(section.heading.bulletPoints) 
-        ? section.heading.bulletPoints.map(point => point || '')
-        : ['']
+      title: section.heading.title || '', // Use empty string if title is null/undefined
+      detail: section.heading.detail || '', // Use empty string if detail is null/undefined
+      bulletPoints: section.heading.bulletPoints.filter(bullet => bullet !== null) || [] // Keep all non-null bullet points
     }));
-  
-    // Ensure we're sending a valid JSON string
+
     formData.append('headings', JSON.stringify(headings));
-console.log(formData);
+
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/post`, formData, {
-        headers: { 
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       console.log('Blog added successfully:', response.data);
       toast.success('Blog post added successfully!');
@@ -129,8 +124,8 @@ console.log(formData);
         } 
       }]);
     } catch (error) {
-      console.error('Error details:', error.response?.data || error.message);
-      toast.error(error.response?.data?.message || 'Error adding blog post. Please try again.');
+      console.error('Error adding blog:', error);
+      toast.error('Error adding blog post. Please try again.');
     }
   };
 
