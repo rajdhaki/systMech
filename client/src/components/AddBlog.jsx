@@ -155,7 +155,7 @@ const AddBlog = () => {
                 value={section.heading.title}
                 onChange={(e) => handleSectionHeadingChange(sectionIndex, 'title', e.target.value)}
                 className="w-full p-2 bg-gray-600 text-gray-100 border border-gray-500 rounded-md"
-                required={sectionIndex === 0}
+                // required={sectionIndex === 0}
               />
               
               <textarea
@@ -164,7 +164,7 @@ const AddBlog = () => {
                 onChange={(e) => handleSectionHeadingChange(sectionIndex, 'detail', e.target.value)}
                 className="w-full p-2 bg-gray-600 text-gray-100 border border-gray-500 rounded-md"
                 rows="3"
-                required={sectionIndex === 0}
+                // required={sectionIndex === 0}
               />
 
               {/* Bullet Points Section */}
