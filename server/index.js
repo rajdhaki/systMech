@@ -80,16 +80,39 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-// Error handling middleware
-app.use((error, req, res, next) => {
-    if (error) {
-        console.error('Error:', error);
-        return res.status(500).json({
-            message: error.message || 'Internal Server Error',
-            error: error
+let isDbConnected = false;
+
+// Initialize database connection
+const initializeDb = async () => {
+    try {
+        await dbConnect();
+        isDbConnected = true;
+    } catch (error) {
+        console.error('Failed to connect to database:', error);
+        isDbConnected = false;
+    }
+};
+
+// Initialize DB connection
+initializeDb();
+
+// Add DB connection check middleware
+const checkDbConnection = (req, res, next) => {
+    if (!isDbConnected) {
+        return res.status(503).json({ 
+            message: 'Database connection not available' 
         });
     }
     next();
+};
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+    console.error('Error:', error);
+    res.status(500).json({
+        message: error.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? error : {}
+    });
 });
 
 // Add a route to check if images are accessible
@@ -146,13 +169,8 @@ app.post('/login', async (req, res) => {
 // Add OPTIONS handler for the /post endpoint
 app.options('/post', cors());
 
-app.post('/post', upload, async (req, res) => {
+app.post('/post', checkDbConnection, upload, async (req, res) => {
     try {
-        // Enable CORS for this specific route
-        res.header('Access-Control-Allow-Origin', 'https://systmech.vercel.app');
-        res.header('Access-Control-Allow-Methods', 'POST');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
         const { headings } = req.body;
         
         let parsedHeadings = [];
@@ -177,9 +195,18 @@ app.post('/post', upload, async (req, res) => {
             }))
         });
 
-        const savedPost = await newPost.save();
-        res.status(201).json(savedPost);
+        // Add timeout promise
+        const saveTimeout = new Promise((resolve, reject) => {
+            setTimeout(() => reject(new Error('Save operation timed out')), 25000);
+        });
 
+        // Race between save operation and timeout
+        const savedPost = await Promise.race([
+            newPost.save(),
+            saveTimeout
+        ]);
+
+        res.status(201).json(savedPost);
     } catch (error) {
         console.error('Post creation error:', error);
         res.status(500).json({
@@ -277,18 +304,17 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-    console.error('Global error:', err);
-    res.status(err.status || 500).json({
-        message: err.message || 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? err : {}
-    });
-});
+// Start server with retry mechanism for database connection
+const startServer = async () => {
+    try {
+        const port = process.env.PORT || 8000;
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+};
 
-// Start server with error handling
-app.listen(process.env.PORT || 8000, () => {
-    console.log(`Server running on port ${process.env.PORT || 8000}`);
-}).on('error', (err) => {
-    console.error('Server error:', err);
-});
+startServer();
