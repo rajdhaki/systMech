@@ -86,6 +86,8 @@ const AddBlog = () => {
     e.preventDefault();
 
     const formData = new FormData();
+    
+    // Add photos only if they exist
     sections.forEach((section, index) => {
       if (section.photo) {
         if (index === 0) {
@@ -96,13 +98,13 @@ const AddBlog = () => {
       }
     });
     
+    // Include all headings without filtering
     const headings = sections.map(section => ({
-      title: section.heading.title,
-      detail: section.heading.detail,
-      bulletPoints: section.heading.bulletPoints.filter(bullet => bullet.trim() !== '') // Filter out empty bullet points
+      title: section.heading.title || '', // Use empty string if title is null/undefined
+      detail: section.heading.detail || '', // Use empty string if detail is null/undefined
+      bulletPoints: section.heading.bulletPoints.filter(bullet => bullet !== null) || [] // Keep all non-null bullet points
     }));
 
-    console.log('Submitting headings:', headings); // Debug log
     formData.append('headings', JSON.stringify(headings));
 
     try {
