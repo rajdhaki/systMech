@@ -54,65 +54,31 @@ const upload = multer({
 ])
 
 const app = express()
-dotenv.config()
+dbConnect()
 
-// Place this before defining any routes
-const corsOptions = {
-    origin: [
-        'https://systmech.vercel.app',
-        'https://systmech.onrender.com',
-        'http://localhost:5173'
-    ],
+// CORS configuration - Place this before routes
+app.use(cors({
+    origin: ['https://systmech.vercel.app', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-    optionsSuccessStatus: 200
-};
-
-// Apply CORS middleware
-app.use(cors(corsOptions));
-
-// Add preflight handler for all routes
-app.options('*', cors(corsOptions));
+    allowedHeaders: ['Content-Type', 'Authorization', 'multipart/form-data'],
+    credentials: true
+}));
 
 // Other middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-let isDbConnected = false;
-
-// Initialize database connection
-const initializeDb = async () => {
-    try {
-        await dbConnect();
-        isDbConnected = true;
-    } catch (error) {
-        console.error('Failed to connect to database:', error);
-        isDbConnected = false;
-    }
-};
-
-// Initialize DB connection
-initializeDb();
-
-// Add DB connection check middleware
-const checkDbConnection = (req, res, next) => {
-    if (!isDbConnected) {
-        return res.status(503).json({ 
-            message: 'Database connection not available' 
+// Error handling middleware
+app.use((error, req, res, next) => {
+    if (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
+            error: error
         });
     }
     next();
-};
-
-// Error handling middleware
-app.use((error, req, res, next) => {
-    console.error('Error:', error);
-    res.status(500).json({
-        message: error.message || 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? error : {}
-    });
 });
 
 // Add a route to check if images are accessible
@@ -169,21 +135,30 @@ app.post('/login', async (req, res) => {
 // Add OPTIONS handler for the /post endpoint
 app.options('/post', cors());
 
-app.post('/post', checkDbConnection, upload, async (req, res) => {
+app.post('/post', upload, async (req, res) => {
     try {
+        // Set CORS headers explicitly
+        res.header('Access-Control-Allow-Origin', 'https://systmech.vercel.app');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.header('Access-Control-Allow-Methods', 'POST');
+
         const { headings } = req.body;
         
+        // Handle case when no image is uploaded
+        const imgUrl = req.files && req.files['img'] ? 
+            `uploads/${req.files['img'][0].filename}` : 
+            '';
+
+        // Safely parse headings
         let parsedHeadings = [];
         try {
             parsedHeadings = headings ? JSON.parse(headings) : [];
-        } catch (error) {
-            console.error('Error parsing headings:', error);
+        } catch (e) {
+            console.error('Error parsing headings:', e);
+            parsedHeadings = [];
         }
 
-        const imgUrl = req.files?.['img']?.[0]?.filename 
-            ? `uploads/${req.files['img'][0].filename}` 
-            : '';
-
+        // Create blog post even if fields are empty
         const newPost = new Blog({
             imgUrl,
             additionalImages: [],
@@ -191,25 +166,17 @@ app.post('/post', checkDbConnection, upload, async (req, res) => {
                 title: heading.title || '',
                 detail: heading.detail || '',
                 bulletPoints: Array.isArray(heading.bulletPoints) ? 
-                    heading.bulletPoints.filter(Boolean) : []
+                    heading.bulletPoints.filter(bp => bp !== null) : []
             }))
         });
 
-        // Add timeout promise
-        const saveTimeout = new Promise((resolve, reject) => {
-            setTimeout(() => reject(new Error('Save operation timed out')), 25000);
-        });
+        const savedPost = await newPost.save();
+        console.log('Post saved successfully:', savedPost);
+        return res.status(201).json(savedPost);
 
-        // Race between save operation and timeout
-        const savedPost = await Promise.race([
-            newPost.save(),
-            saveTimeout
-        ]);
-
-        res.status(201).json(savedPost);
     } catch (error) {
-        console.error('Post creation error:', error);
-        res.status(500).json({
+        console.error('Server error:', error);
+        return res.status(500).json({
             message: 'Error creating blog post',
             error: error.message
         });
@@ -299,22 +266,13 @@ app.delete('/post/:id', async (req, res) => {
     }
 });
 
-// Add health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'ok' });
-});
+dotenv.config()
 
-// Start server with retry mechanism for database connection
-const startServer = async () => {
-    try {
-        const port = process.env.PORT || 8000;
-        app.listen(port, () => {
-            console.log(`Server running on port ${port}`);
-        });
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
-};
+if (!process.env.MONGODB_URI) {
+    console.error('MONGODB_URI is not defined in environment variables');
+    process.exit(1);
+}
 
-startServer();
+const PORT = process.env.PORT || 8000
+
+app.listen(PORT, ()=>console.log(`app is running at ${PORT}`))
