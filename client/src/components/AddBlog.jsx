@@ -106,10 +106,10 @@ const AddBlog = () => {
         ? section.heading.bulletPoints.map(point => point || '')
         : ['']
     }));
-
+  
     // Ensure we're sending a valid JSON string
     formData.append('headings', JSON.stringify(headings));
-
+console.log(formData);
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/post`, formData, {
         headers: { 
