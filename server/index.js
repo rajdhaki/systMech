@@ -56,39 +56,30 @@ const upload = multer({
 const app = express()
 dbConnect()
 
+// CORS configuration - Place this before routes
 app.use(cors({
-    origin: [
-        'https://systmech.vercel.app/',
-        'https://systmech-q47qv36a7-raj-s-projects-8e708ad6.vercel.app',
-        'http://localhost:5173'
-    ],
-    credentials: true,
+    origin: ['https://systmech.vercel.app', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
+    allowedHeaders: ['Content-Type', 'Authorization', 'multipart/form-data'],
+    credentials: true
+}));
 
-// Now the error handling middleware will work
+// Other middleware
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
+// Error handling middleware
 app.use((error, req, res, next) => {
-    console.error('Error:', error);
-    if (error instanceof multer.MulterError) {
-        return res.status(400).json({
-            message: 'Upload error: ' + error.message,
+    if (error) {
+        console.error('Error:', error);
+        return res.status(500).json({
+            message: error.message || 'Internal Server Error',
             error: error
         });
     }
-    if (error) {
-        return res.status(500).json({
-            message: 'Internal server error',
-            error: error.message
-        });
-    }
-    next(error);
-})
-
-// Serve static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+    next();
+});
 
 // Add a route to check if images are accessible
 app.get('/check-image/:filename', (req, res) => {
@@ -141,8 +132,16 @@ app.post('/login', async (req, res) => {
     }
 })
 
+// Add OPTIONS handler for the /post endpoint
+app.options('/post', cors());
+
 app.post('/post', upload, async (req, res) => {
     try {
+        // Set CORS headers explicitly
+        res.header('Access-Control-Allow-Origin', 'https://systmech.vercel.app');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.header('Access-Control-Allow-Methods', 'POST');
+
         const { headings } = req.body;
         
         // Handle case when no image is uploaded
@@ -150,47 +149,36 @@ app.post('/post', upload, async (req, res) => {
             `uploads/${req.files['img'][0].filename}` : 
             '';
 
-        // Safely parse headings with default empty array
-        let parsedHeadings;
+        // Safely parse headings
+        let parsedHeadings = [];
         try {
             parsedHeadings = headings ? JSON.parse(headings) : [];
         } catch (e) {
+            console.error('Error parsing headings:', e);
             parsedHeadings = [];
         }
-        
-        // Ensure each heading has all required fields
-        parsedHeadings = parsedHeadings.map(heading => ({
-            title: heading.title || '',
-            detail: heading.detail || '',
-            bulletPoints: Array.isArray(heading.bulletPoints) ? heading.bulletPoints : []
-        }));
 
-        const additionalImages = [];
-        if (req.files) {
-            for (let i = 0; i < 5; i++) {
-                const fieldName = `additionalImg${i}`;
-                if (req.files[fieldName]) {
-                    additionalImages.push(`uploads/${req.files[fieldName][0].filename}`);
-                }
-            }
-        }
-
+        // Create blog post even if fields are empty
         const newPost = new Blog({
             imgUrl,
-            additionalImages,
-            headings: parsedHeadings
+            additionalImages: [],
+            headings: parsedHeadings.map(heading => ({
+                title: heading.title || '',
+                detail: heading.detail || '',
+                bulletPoints: Array.isArray(heading.bulletPoints) ? 
+                    heading.bulletPoints.filter(bp => bp !== null) : []
+            }))
         });
 
         const savedPost = await newPost.save();
-        console.log('Saved post:', savedPost);
-        res.status(201).json(savedPost);
-    }
-    catch (error) {
-        console.error('Error in post route:', error);
-        res.status(500).json({ 
-            message: "Internal server error", 
-            error: error.message,
-            stack: error.stack // This will help in debugging
+        console.log('Post saved successfully:', savedPost);
+        return res.status(201).json(savedPost);
+
+    } catch (error) {
+        console.error('Server error:', error);
+        return res.status(500).json({
+            message: 'Error creating blog post',
+            error: error.message
         });
     }
 });
@@ -279,6 +267,12 @@ app.delete('/post/:id', async (req, res) => {
 });
 
 dotenv.config()
+
+if (!process.env.MONGODB_URI) {
+    console.error('MONGODB_URI is not defined in environment variables');
+    process.exit(1);
+}
+
 const PORT = process.env.PORT || 8000
 
 app.listen(PORT, ()=>console.log(`app is running at ${PORT}`))
