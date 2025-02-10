@@ -53,7 +53,23 @@ const upload = multer({
   { name: 'additionalImg4', maxCount: 1 },
 ])
 
-// Add error handling middleware for multer
+const app = express()
+dbConnect()
+
+app.use(cors({
+    origin: [
+        'https://systmech.vercel.app/',
+        'https://systmech-q47qv36a7-raj-s-projects-8e708ad6.vercel.app',
+        'http://localhost:5173'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+// Now the error handling middleware will work
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     return res.status(400).json({
@@ -77,23 +93,6 @@ app.get('/check-image/:filename', (req, res) => {
     res.json({ exists: false, path: filepath });
   }
 });
-
-dotenv.config()
-const PORT = process.env.PORT || 8000
-
-const app = express()
-dbConnect()
-app.use(cors({
-    origin: [
-        'https://systmech-q47qv36a7-raj-s-projects-8e708ad6.vercel.app',
-        'http://localhost:5173'
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
 
 app.get('/', (req, res) => {
     res.send("Hello there")
@@ -140,13 +139,9 @@ app.post('/post', upload, async (req, res) => {
         
         const imgUrl = req.files['img'] ? 
             `uploads/${req.files['img'][0].filename}` : 
-            null;
+            '';
 
-        if (!headings || !imgUrl) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-
-        let parsedHeadings = JSON.parse(headings);
+        let parsedHeadings = headings ? JSON.parse(headings) : [];
         
         // Ensure bulletPoints is properly initialized for each heading
         parsedHeadings = parsedHeadings.map(heading => ({
@@ -260,5 +255,8 @@ app.delete('/post/:id', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+dotenv.config()
+const PORT = process.env.PORT || 8000
 
 app.listen(PORT, ()=>console.log(`app is running at ${PORT}`))

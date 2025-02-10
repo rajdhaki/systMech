@@ -2,11 +2,11 @@ import mongoose from "mongoose"
 const headingSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   detail: {
     type: String,
-    required: true,
+    required: false,
   },
   bulletPoints: [String] // Add this line for bullet points
 });
@@ -14,7 +14,7 @@ const headingSchema = new mongoose.Schema({
 const blogSchema = new mongoose.Schema({
     imgUrl: {
       type: String,
-      required: true,
+      required: false,
     },
     additionalImages: [String],
     headings: [headingSchema],
