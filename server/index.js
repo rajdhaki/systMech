@@ -71,12 +71,20 @@ app.use(express.urlencoded({ extended: false }))
 
 // Now the error handling middleware will work
 app.use((error, req, res, next) => {
-  if (error instanceof multer.MulterError) {
-    return res.status(400).json({
-      message: 'Upload error: ' + error.message
-    })
-  }
-  next(error)
+    console.error('Error:', error);
+    if (error instanceof multer.MulterError) {
+        return res.status(400).json({
+            message: 'Upload error: ' + error.message,
+            error: error
+        });
+    }
+    if (error) {
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+    next(error);
 })
 
 // Serve static files
@@ -137,23 +145,33 @@ app.post('/post', upload, async (req, res) => {
     try {
         const { headings } = req.body;
         
-        const imgUrl = req.files['img'] ? 
+        // Handle case when no image is uploaded
+        const imgUrl = req.files && req.files['img'] ? 
             `uploads/${req.files['img'][0].filename}` : 
             '';
 
-        let parsedHeadings = headings ? JSON.parse(headings) : [];
+        // Safely parse headings with default empty array
+        let parsedHeadings;
+        try {
+            parsedHeadings = headings ? JSON.parse(headings) : [];
+        } catch (e) {
+            parsedHeadings = [];
+        }
         
-        // Ensure bulletPoints is properly initialized for each heading
+        // Ensure each heading has all required fields
         parsedHeadings = parsedHeadings.map(heading => ({
-            ...heading,
-            bulletPoints: heading.bulletPoints || []
+            title: heading.title || '',
+            detail: heading.detail || '',
+            bulletPoints: Array.isArray(heading.bulletPoints) ? heading.bulletPoints : []
         }));
 
         const additionalImages = [];
-        for (let i = 0; i < 5; i++) {
-            const fieldName = `additionalImg${i}`;
-            if (req.files[fieldName]) {
-                additionalImages.push(`uploads/${req.files[fieldName][0].filename}`);
+        if (req.files) {
+            for (let i = 0; i < 5; i++) {
+                const fieldName = `additionalImg${i}`;
+                if (req.files[fieldName]) {
+                    additionalImages.push(`uploads/${req.files[fieldName][0].filename}`);
+                }
             }
         }
 
@@ -169,7 +187,11 @@ app.post('/post', upload, async (req, res) => {
     }
     catch (error) {
         console.error('Error in post route:', error);
-        res.status(500).json({ message: "Internal server error", error: error.message });
+        res.status(500).json({ 
+            message: "Internal server error", 
+            error: error.message,
+            stack: error.stack // This will help in debugging
+        });
     }
 });
 
