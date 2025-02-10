@@ -170,7 +170,7 @@ const AddBlog = () => {
               />
 
               {/* Bullet Points Section */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-300">Bullet Points</label>
                 {section.heading.bulletPoints?.map((bullet, bulletIndex) => (
                   <div key={bulletIndex} className="flex items-center space-x-2">
@@ -198,7 +198,7 @@ const AddBlog = () => {
                 >
                   + Add Bullet Point
                 </button>
-              </div>
+              </div> */}
 
               {sectionIndex > 0 && (
                 <button
