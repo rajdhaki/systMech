@@ -54,15 +54,26 @@ const upload = multer({
 ])
 
 const app = express()
-dbConnect()
+dotenv.config()
 
-// CORS configuration - Place this before routes
-app.use(cors({
-    origin: ['https://systmech.vercel.app', 'http://localhost:5173'],
+// Place this before defining any routes
+const corsOptions = {
+    origin: [
+        'https://systmech.vercel.app',
+        'https://systmech.onrender.com',
+        'http://localhost:5173'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'multipart/form-data'],
-    credentials: true
-}));
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Add preflight handler for all routes
+app.options('*', cors(corsOptions));
 
 // Other middleware
 app.use(express.json())
@@ -137,28 +148,24 @@ app.options('/post', cors());
 
 app.post('/post', upload, async (req, res) => {
     try {
-        // Set CORS headers explicitly
+        // Enable CORS for this specific route
         res.header('Access-Control-Allow-Origin', 'https://systmech.vercel.app');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.header('Access-Control-Allow-Methods', 'POST');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
         const { headings } = req.body;
         
-        // Handle case when no image is uploaded
-        const imgUrl = req.files && req.files['img'] ? 
-            `uploads/${req.files['img'][0].filename}` : 
-            '';
-
-        // Safely parse headings
         let parsedHeadings = [];
         try {
             parsedHeadings = headings ? JSON.parse(headings) : [];
-        } catch (e) {
-            console.error('Error parsing headings:', e);
-            parsedHeadings = [];
+        } catch (error) {
+            console.error('Error parsing headings:', error);
         }
 
-        // Create blog post even if fields are empty
+        const imgUrl = req.files?.['img']?.[0]?.filename 
+            ? `uploads/${req.files['img'][0].filename}` 
+            : '';
+
         const newPost = new Blog({
             imgUrl,
             additionalImages: [],
@@ -166,17 +173,16 @@ app.post('/post', upload, async (req, res) => {
                 title: heading.title || '',
                 detail: heading.detail || '',
                 bulletPoints: Array.isArray(heading.bulletPoints) ? 
-                    heading.bulletPoints.filter(bp => bp !== null) : []
+                    heading.bulletPoints.filter(Boolean) : []
             }))
         });
 
         const savedPost = await newPost.save();
-        console.log('Post saved successfully:', savedPost);
-        return res.status(201).json(savedPost);
+        res.status(201).json(savedPost);
 
     } catch (error) {
-        console.error('Server error:', error);
-        return res.status(500).json({
+        console.error('Post creation error:', error);
+        res.status(500).json({
             message: 'Error creating blog post',
             error: error.message
         });
@@ -266,13 +272,23 @@ app.delete('/post/:id', async (req, res) => {
     }
 });
 
-dotenv.config()
+// Add health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 
-if (!process.env.MONGODB_URI) {
-    console.error('MONGODB_URI is not defined in environment variables');
-    process.exit(1);
-}
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Global error:', err);
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+});
 
-const PORT = process.env.PORT || 8000
-
-app.listen(PORT, ()=>console.log(`app is running at ${PORT}`))
+// Start server with error handling
+app.listen(process.env.PORT || 8000, () => {
+    console.log(`Server running on port ${process.env.PORT || 8000}`);
+}).on('error', (err) => {
+    console.error('Server error:', err);
+});

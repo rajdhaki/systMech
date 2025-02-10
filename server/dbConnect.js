@@ -1,14 +1,24 @@
 import mongoose from "mongoose";
+
 const dbConnect = async () => {
-
     try {
-        await mongoose.connect(process.env.MONGODB_URI)
-        console.log("MongoDB Connect");
-    }
-    catch (error) {
-        console.log(`Connection Fail ${error}`);
-    }
-}
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is not defined in environment variables');
+        }
 
+        const options = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        };
 
-export {dbConnect}
+        await mongoose.connect(process.env.MONGODB_URI, options);
+        console.log("MongoDB Connected Successfully");
+    } catch (error) {
+        console.error("MongoDB Connection Error:", error);
+        throw error; // Re-throw to handle in main app
+    }
+};
+
+export { dbConnect };
