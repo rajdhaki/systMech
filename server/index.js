@@ -257,6 +257,10 @@ app.put('/post/:id', upload, async (req, res) => {
 
 // Add this route for deleting blog posts
 app.delete('/post/:id', async (req, res) => {
+        // Set CORS headers
+        res.header('Access-Control-Allow-Origin', 'https://systmech.vercel.app');
+        res.header('Access-Control-Allow-Methods', 'DELETE');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     try {
         console.log(`Received delete request for blog ID: ${req.params.id}`);
         const deletedPost = await Blog.findByIdAndDelete(req.params.id);
