@@ -255,14 +255,18 @@ app.put('/post/:id', upload, async (req, res) => {
 // Add this route for deleting blog posts
 app.delete('/post/:id', async (req, res) => {
     try {
+        console.log(`Received delete request for blog ID: ${req.params.id}`);
         const deletedPost = await Blog.findByIdAndDelete(req.params.id);
+        console.log('Deleted post:', deletedPost);
+        
         if (!deletedPost) {
+            console.log('Blog post not found');
             return res.status(404).json({ message: "Blog post not found" });
         }
         res.status(204).send();
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error('Delete route error:', error);
+        res.status(500).json({ message: "Internal server error", error: error.message });
     }
 });
 

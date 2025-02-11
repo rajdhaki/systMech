@@ -20,10 +20,12 @@ const EditBlog = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/post/${id}`);
+      console.log(`Attempting to delete blog with ID: ${id}`);
+      const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/post/${id}`);
+      console.log('Delete response:', response);
       fetchBlogs(); // Refresh the blog list after deletion
     } catch (error) {
-      console.error("Error deleting blog:", error);
+      console.error("Error deleting blog:", error.response ? error.response.data : error);
     }
   };
 
