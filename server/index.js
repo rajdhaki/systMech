@@ -112,26 +112,25 @@ console.log(req.body);
 
 app.post('/login', async (req, res) => {
     try {
-
         const { email, password } = req.body
 
         const user = await systmetch.findOne({ email: email });
         console.log(user)
 
-        if (user.password === password) {
-            console.log("login");
-            return res.send({ "message": "login successfully" });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-        else {
-            console.log("password is wrong");
 
-            return res.status(404).send("password is wrong");
-
+        if (user.password !== password) {
+            return res.status(401).json({ message: "Incorrect password" });
         }
+
+        // Successful login
+        return res.status(200).json({ message: "login successfully" });
 
     } catch (e) {
-        console.log(e)
-        res.status(404).send("User Not Found")
+        console.error(e);
+        res.status(500).json({ message: "Server error during login" });
     }
 })
 

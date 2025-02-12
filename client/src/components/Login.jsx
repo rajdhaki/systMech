@@ -15,13 +15,13 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/login`, { email, password });
-      if (response || response.status !== 404) {
-        console.log("loged in");
+      if (response.data.message === "login successfully") {
+        console.log("logged in");
 
         navigate('/admin/dashboard'); 
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      setError(err.response?.data || 'An error occurred during login');
     }
   };
 
