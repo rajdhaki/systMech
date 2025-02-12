@@ -58,14 +58,28 @@ dbConnect()
 
 // CORS configuration - Place this before routes
 app.use(cors({
-    origin: ['https://systmech.vercel.app', 'http://localhost:5173'],
+    origin: function(origin, callback){
+        // Allow requests with no origin (like mobile apps or curl requests)
+        const allowedOrigins = ['https://systmech.vercel.app', 'http://localhost:5173'];
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'multipart/form-data', 'Access-Control-Allow-Headers'],
-    exposedHeaders: ['Access-Control-Allow-Headers'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Headers'],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 200
 }));
+
+// Global error handler to handle CORS errors
+app.use((err, req, res, next) => {
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({ error: 'CORS not allowed' });
+    }
+    next(err);
+});
 
 // Other middleware
 app.use(express.json())
