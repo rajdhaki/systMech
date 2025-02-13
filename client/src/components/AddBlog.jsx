@@ -24,8 +24,10 @@ const AddBlog = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        updatedSections[index].photoPreview = reader.result;
-        setSections(updatedSections);
+        const newUpdatedSections = [...sections]; // Create a new copy inside the callback
+        newUpdatedSections[index].photo = file;
+        newUpdatedSections[index].photoPreview = reader.result;
+        setSections(newUpdatedSections);
       };
       reader.readAsDataURL(file);
     } else {

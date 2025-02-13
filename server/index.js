@@ -160,10 +160,19 @@ app.post('/post', upload, async (req, res) => {
 
         const { headings } = req.body;
         
-        // Handle case when no image is uploaded
+        // Handle main image
         const imgUrl = req.files && req.files['img'] ? 
             `uploads/${req.files['img'][0].filename}` : 
             '';
+
+        // Handle additional images
+        const additionalImages = [];
+        for (let i = 0; i < 5; i++) {
+            const fieldName = `additionalImg${i}`;
+            if (req.files && req.files[fieldName]) {
+                additionalImages.push(`uploads/${req.files[fieldName][0].filename}`);
+            }
+        }
 
         // Safely parse headings
         let parsedHeadings = [];
@@ -174,10 +183,10 @@ app.post('/post', upload, async (req, res) => {
             parsedHeadings = [];
         }
 
-        // Create blog post even if fields are empty
+        // Create blog post with additional images
         const newPost = new Blog({
             imgUrl,
-            additionalImages: [],
+            additionalImages, // Add the additional images array
             headings: parsedHeadings.map(heading => ({
                 title: heading.title || '',
                 detail: heading.detail || '',
