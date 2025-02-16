@@ -15,8 +15,8 @@ const Blog = ({ id }) => {
         const fetchBlogs = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/post`);
-                
-                setBlogs(response.data.slice(0, 3)); // Get only the first 3 blogs
+                const lastThreeBlogs = response.data.slice(-3).reverse();
+                setBlogs(lastThreeBlogs);
                 setLoading(false);
             } catch (err) {
                 setError('Error fetching blogs. Please try again later.');
