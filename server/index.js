@@ -54,13 +54,14 @@ const upload = multer({
 ])
 
 const app = express()
+dotenv.config()
 dbConnect()
 
 // CORS configuration - Place this before routes
 app.use(cors({
     origin: function(origin, callback){
         // Allow requests with no origin (like mobile apps or curl requests)
-        const allowedOrigins = ['https://systmech.vercel.app', 'http://localhost:5173'];
+        const allowedOrigins = process.env.FRONTEND_URL ;
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
@@ -299,7 +300,7 @@ app.delete('/post/:id', async (req, res) => {
     }
 });
 
-dotenv.config()
+
 
 if (!process.env.MONGODB_URI) {
     console.error('MONGODB_URI is not defined in environment variables');
